@@ -1,79 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { GridLines, StarField } from "../index";
 import { useTranslations } from "next-intl";
-import { getLocalizedUrl } from "@/lib/url";
 
 export default function ContactSection() {
   const t = useTranslations("contactSection");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-    privacy: false,
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.privacy) {
-      alert("Please agree to the privacy policy to continue.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const formPayload = new URLSearchParams({
-        "form-name": "contact",
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-      });
-
-      const res = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formPayload.toString(),
-      });
-
-      if (!res.ok) throw new Error("Form submission failed");
-
-      setShowSuccess(true);
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-        privacy: false,
-      });
-
-      setTimeout(() => setShowSuccess(false), 8000);
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert("Submission failed. Please try again later.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Redirect to mailing list join page
+    window.open("https://kubestellar.io/joinus", "_blank");
   };
 
   return (
@@ -163,7 +100,7 @@ export default function ContactSection() {
 
             {/* Contact card 2 */}
             <a
-              href={getLocalizedUrl("https://kubestellar.io/slack")}
+              href="https://kubestellar.io/slack"
               target="_blank"
               rel="noopener noreferrer"
               className="block bg-gray-800/50 backdrop-blur-md rounded-xl shadow-sm border border-transparent p-4 sm:p-6 transform transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-purple-500/70 cursor-pointer"
@@ -365,220 +302,31 @@ export default function ContactSection() {
                   {t("formTitle")}
                 </h3>
 
-                <form
-                  name="contact"
-                  method="POST"
-                  data-netlify="true"
-                  data-netlify-honeypot="bot-field"
-                  onSubmit={handleSubmit}
-                  className="space-y-3 sm:space-y-4 flex-1 flex flex-col"
-                >
-                  <input type="hidden" name="form-name" value="contact" />
-                  <input type="hidden" name="bot-field" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-semibold text-gray-300 mb-1 sm:mb-2"
+                <div className="flex-1 flex flex-col items-center justify-center space-y-6 text-center">
+                  <p className="text-gray-300 text-base sm:text-lg max-w-md">
+                    {t("formDescription") || "Join our mailing list to send us messages and stay updated with the latest KubeStellar news and updates."}
+                  </p>
+
+                <form onSubmit={handleSubmit} className="w-full max-w-md">
+                  <button
+                    type="submit"
+                    className="w-full py-3 sm:py-4 px-6 sm:px-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 rounded-xl font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 text-base sm:text-lg"
+                  >
+                    <div className="flex items-center justify-center space-x-2">
+                      <svg
+                        className="h-5 w-5 sm:h-6 sm:w-6"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        {t("formName")}
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700/60 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 backdrop-blur-sm text-sm sm:text-base"
-                        placeholder={t("formNamePlaceholder")}
-                      />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span>{t("joinMailingList") || "Join Our Mailing List"}</span>
                     </div>
-
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-semibold text-gray-300 mb-1 sm:mb-2"
-                      >
-                        {t("formEmail")}
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700/60 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 backdrop-blur-sm text-sm sm:text-base"
-                        placeholder={t("formEmailPlaceholder")}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-semibold text-gray-300 mb-1 sm:mb-2"
-                    >
-                      {t("formSubject")}
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 bg-gray-700/60 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 backdrop-blur-sm appearance-none cursor-pointer hover:border-gray-500/60 hover:bg-gray-700/70 text-sm sm:text-base"
-                      >
-                        <option value="" disabled className="text-gray-400">
-                          {t("formSubjectPlaceholder")}
-                        </option>
-                        <option
-                          value="General Inquiry"
-                          className="bg-gray-800 text-white py-2"
-                        >
-                          {t("formSubjectOption1")}
-                        </option>
-                        <option
-                          value="Technical Support"
-                          className="bg-gray-800 text-white py-2"
-                        >
-                          {t("formSubjectOption2")}
-                        </option>
-                        <option
-                          value="Partnership"
-                          className="bg-gray-800 text-white py-2"
-                        >
-                          {t("formSubjectOption3")}
-                        </option>
-                        <option
-                          value="Documentation Feedback"
-                          className="bg-gray-800 text-white py-2"
-                        >
-                          {t("formSubjectOption4")}
-                        </option>
-                        <option
-                          value="Enterprise Solutions"
-                          className="bg-gray-800 text-white py-2"
-                        >
-                          {t("formSubjectOption5")}
-                        </option>
-                        <option
-                          value="Other"
-                          className="bg-gray-800 text-white py-2"
-                        >
-                          {t("formSubjectOption6")}
-                        </option>
-                      </select>
-                      {/* Custom dropdown chevron */}
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 sm:pr-4 pointer-events-none">
-                        <svg
-                          className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform duration-200"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 flex flex-col">
-                    <label
-                      htmlFor="message"
-                      className="block text-sm font-semibold text-gray-300 mb-1 sm:mb-2"
-                    >
-                      {t("formMessage")}
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700/60 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 backdrop-blur-sm resize-none flex-1 min-h-[100px] sm:min-h-[120px] text-sm sm:text-base"
-                      placeholder={t("formMessagePlaceholder")}
-                    ></textarea>
-                  </div>
-
-                  <div className="flex items-start space-x-2 sm:space-x-3">
-                    <input
-                      id="privacy"
-                      name="privacy"
-                      type="checkbox"
-                      checked={formData.privacy}
-                      onChange={handleInputChange}
-                      required
-                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all duration-200"
-                    />
-                    <label
-                      htmlFor="privacy"
-                      className="text-xs sm:text-sm text-gray-300 leading-relaxed"
-                    >
-                      {t("formPrivacy")}{" "}
-                      <Link
-                        href="/docs/contribution-guidelines/license-inc"
-                        className="text-blue-400 hover:text-blue-300 underline transition-colors duration-200"
-                      >
-                        {t("formPrivacyLink")}
-                      </Link>{" "}
-                      {t("formPrivacyCont")}
-                    </label>
-                  </div>
-
-                  <div className="pt-2 sm:pt-3">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-2 sm:py-3 px-4 sm:px-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 rounded-xl font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 text-sm sm:text-base"
-                    >
-                      {isSubmitting ? (
-                        <div className="flex items-center justify-center space-x-2">
-                          <div className="animate-spin h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                          <span>{t("formSubmitting")}</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center space-x-2">
-                          <span>{t("formSubmit")}</span>
-                        </div>
-                      )}
-                    </button>
-                  </div>
+                  </button>
                 </form>
-
-                {/* Success Message */}
-                {showSuccess && (
-                  <div className="mt-3 sm:mt-4 rounded-xl bg-green-900/30 p-3 sm:p-4 border border-green-500/30 backdrop-blur-sm">
-                    <div className="flex">
-                      <div className="flex-shrink-0">
-                        <svg
-                          className="h-4 w-4 sm:h-5 sm:w-5 text-green-400"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div className="ml-2 sm:ml-3">
-                        <p className="text-xs sm:text-sm font-medium text-green-300">
-                          {t("formSuccess")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
